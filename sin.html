@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>قانون الجيوب - حاسبة المثلثات الذكية</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            background: linear-gradient(145deg, #dfc 0%, #bda 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Tahoma', system-ui, 'Cairo', sans-serif;
+            padding: 1.5rem;
+        }
+
+        /* البطاقة الرئيسية */
+        .card {
+            background-color: #dfc;  /* لون الخلفية المطلوب #dfc */
+            max-width: 1100px;
+            width: 100%;
+            border-radius: 3rem;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+            padding: 2rem 1.8rem;
+            transition: all 0.2s ease;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.9rem;
+            font-weight: 700;
+            color: #1f4f1f;
+            text-shadow: 2px 2px 0 #b8d9b0;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .sub {
+            text-align: center;
+            color: #2b6e2b;
+            font-weight: 500;
+            margin-bottom: 2rem;
+            border-bottom: 2px dashed #0a8a3a;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 6px;
+        }
+
+        /* صفوف الأزواج (الضلع + الزاوية المقابلة) */
+        .triangle-pair {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+        }
+
+        /* كل زوج (ضلع فوق زاوية) */
+        .pair {
+            flex: 1;
+            min-width: 140px;
+            background: rgba(200, 230, 180, 0.5);
+            border-radius: 2rem;
+            padding: 1rem 0.7rem;
+            backdrop-filter: blur(1px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .pair:hover {
+            transform: translateY(-4px);
+        }
+
+        .pair label {
+            display: block;
+            text-align: center;
+            font-weight: bold;
+            color: #1a4f1a;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .side-input, .angle-input {
+            width: 100%;
+            padding: 14px 10px;
+            font-size: 1.1rem;
+            text-align: center;
+            border: none;
+            border-radius: 60px;
+            background: white;
+            box-shadow: inset 0 1px 4px rgba(0,0,0,0.1), 0 1px 2px rgba(255,255,255,0.8);
+            font-weight: 600;
+            color: #1d3b1d;
+            transition: all 0.2s;
+            outline: none;
+            font-family: monospace;
+        }
+
+        .side-input:focus, .angle-input:focus {
+            box-shadow: 0 0 0 3px #0f9, inset 0 1px 2px white;
+            background: #fffff0;
+        }
+
+        /* placeholders بلون لطيف */
+        .side-input::placeholder, .angle-input::placeholder {
+            color: #9bbf8b;
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+
+        /* فاصل بين الصفين */
+        .pair-separator {
+            margin: 0.5rem 0 0.2rem;
+        }
+
+        /* أزرار التحكم */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 2rem 0 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: none;
+            padding: 12px 28px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.2);
+            font-family: inherit;
+            width: 150px;
+            letter-spacing: 1px;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-calc {
+            background: #0c0;
+            color: white;
+            text-shadow: 0 1px 1px #064d06;
+            border-bottom: 3px solid #064d06;
+        }
+
+        .btn-calc:hover {
+            background: #0b6;
+            transform: scale(1.02);
+        }
+
+        .btn-reset {
+            background: #090;
+            color: #f9f9e0;
+            border-bottom: 3px solid #054205;
+        }
+
+        .btn-reset:hover {
+            background: #0a6a0a;
+        }
+
+        /* رسالة تنبيه صغيرة */
+        .info-msg {
+            text-align: center;
+            font-size: 0.85rem;
+            background: #eef5e6;
+            width: fit-content;
+            margin: 15px auto 0;
+            padding: 6px 18px;
+            border-radius: 30px;
+            color: #2a682a;
+            font-weight: 500;
+        }
+
+        /* أنيميشن الوميض للأخضر والأحمر */
+        @keyframes flashGreen {
+            0% { background-color: #c8ffc8; box-shadow: 0 0 0 0 #0f9; transform: scale(1);}
+            50% { background-color: #9eff9e; box-shadow: 0 0 0 4px #0f9; transform: scale(1.01);}
+            100% { background-color: white; box-shadow: inset 0 1px 4px rgba(0,0,0,0.1); transform: scale(1);}
+        }
+
+        @keyframes flashRed {
+            0% { background-color: #ffe0e0; box-shadow: 0 0 0 0 #f44;}
+            50% { background-color: #ffb3b3; box-shadow: 0 0 0 4px #ff6666;}
+            100% { background-color: white; box-shadow: inset 0 1px 4px rgba(0,0,0,0.1);}
+        }
+
+        .green-flash {
+            animation: flashGreen 0.55s ease-in-out 2;
+        }
+
+        .red-flash {
+            animation: flashRed 0.55s ease-in-out 2;
+        }
+
+        /* تنسيق responsive */
+        @media (max-width: 760px) {
+            .triangle-pair {
+                gap: 1rem;
+            }
+            .pair {
+                min-width: 100px;
+            }
+            .btn {
+                width: 120px;
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+            .card {
+                padding: 1.5rem;
+            }
+        }
+
+        footer {
+            font-size: 0.7rem;
+            text-align: center;
+            margin-top: 20px;
+            color: #568c46;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h1>📐 قانون الجيوب 🔺</h1>
+    <div style="text-align:center"><span class="sub">a/sin(A) = b/sin(B) = c/sin(C)</span></div>
+
+    <!-- سطر الأضلاع والزوايا: كل ثلاث عناصر بشكل أفقي، كل زوج يحتوي ضلع (فوق) وزاوية (تحت) -->
+    <div class="triangle-pair">
+        <!-- الزوج الأول: الضلع a و الزاوية A -->
+        <div class="pair">
+            <label>📍 الضلع a</label>
+            <input type="number" id="sideA" class="side-input" placeholder="طول الضلع a" step="any" value="">
+            <div style="height: 10px;"></div>
+            <label>📐 الزاوية A (مقابلة)</label>
+            <input type="number" id="angleA" class="angle-input" placeholder="∠A بالدرجات" step="any" value="">
+        </div>
+        <!-- الزوج الثاني: الضلع b و الزاوية B -->
+        <div class="pair">
+            <label>📍 الضلع b</label>
+            <input type="number" id="sideB" class="side-input" placeholder="طول الضلع b" step="any" value="">
+            <div style="height: 10px;"></div>
+            <label>📐 الزاوية B (مقابلة)</label>
+            <input type="number" id="angleB" class="angle-input" placeholder="∠B بالدرجات" step="any" value="">
+        </div>
+        <!-- الزوج الثالث: الضلع c و الزاوية C -->
+        <div class="pair">
+            <label>📍 الضلع c</label>
+            <input type="number" id="sideC" class="side-input" placeholder="طول الضلع c" step="any" value="">
+            <div style="height: 10px;"></div>
+            <label>📐 الزاوية C (مقابلة)</label>
+            <input type="number" id="angleC" class="angle-input" placeholder="∠C بالدرجات" step="any" value="">
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn btn-calc" id="calculateBtn">🧮 حساب</button>
+        <button class="btn btn-reset" id="resetBtn">🔄 إعادة تعيين</button>
+    </div>
+    <div class="info-msg">
+        💡 أدخل أي 3 معطيات (مثلاً: ضلعان وزاوية مقابلة لأحدهما، أو ضلع وزاويتين، أو أضلاع وزوايا حسب قانون الجيوب) وسيتم حساب الباقي تلقائياً.
+    </div>
+    <footer>✨ يتم حساب القيم الناقصة وفق علاقة الجيوب ✨</footer>
+</div>
+
+<script>
+    (function() {
+        // عناصر الإدخال (الأضلاع والزوايا)
+        const sideA = document.getElementById('sideA');
+        const sideB = document.getElementById('sideB');
+        const sideC = document.getElementById('sideC');
+        const angleA = document.getElementById('angleA');
+        const angleB = document.getElementById('angleB');
+        const angleC = document.getElementById('angleC');
+        
+        const allInputs = [sideA, sideB, sideC, angleA, angleB, angleC];
+        
+        // --- أصوات باستخدام Web Audio API (بدون ملفات خارجية، نغمات قصيرة) ---
+        let audioCtx = null;
+        
+        function initAudio() {
+            if (audioCtx) return audioCtx;
+            try {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                return audioCtx;
+            } catch(e) {
+                console.warn("Web Audio API غير مدعوم");
+                return null;
+            }
+        }
+        
+        // صوت ناجح / حساب (صوت لطيف)
+        function playSuccessTone() {
+            try {
+                const ctx = initAudio();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sine';
+                osc.frequency.value = 880;
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.5);
+                osc.start();
+                osc.stop(now + 0.4);
+            } catch(e) {}
+        }
+        
+        // صوت إعادة تعيين (Reset) : نغمة "تنبيه منعش" مختلفة
+        function playResetTone() {
+            try {
+                const ctx = initAudio();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'triangle';
+                osc.frequency.value = 620;
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.35);
+                osc.start();
+                osc.stop(now + 0.3);
+                // نغمة ثانية سريعة
+                const osc2 = ctx.createOscillator();
+                const gain2 = ctx.createGain();
+                osc2.connect(gain2);
+                gain2.connect(ctx.destination);
+                osc2.type = 'sine';
+                osc2.frequency.value = 820;
+                gain2.gain.setValueAtTime(0.15, now + 0.1);
+                gain2.gain.exponentialRampToValueAtTime(0.0001, now + 0.45);
+                osc2.start(now + 0.1);
+                osc2.stop(now + 0.45);
+            } catch(e) {}
+        }
+        
+        // صوت خطأ / عدم كفاية معطيات (حزين قصير)
+        function playErrorTone() {
+            try {
+                const ctx = initAudio();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.type = 'sawtooth';
+                osc.frequency.value = 440;
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+                osc.start();
+                osc.stop(now + 0.35);
+            } catch(e) {}
+        }
+        
+        // دالة مساعدة لقراءة القيم (تتحول إلى float, null إذا كانت فارغة أو غير صالحة)
+        function getNumericValue(inputElement) {
+            let val = inputElement.value.trim();
+            if (val === "") return null;
+            let num = parseFloat(val);
+            if (isNaN(num)) return null;
+            return num;
+        }
+        
+        // تعيين القيمة مع تحديث DOM
+        function setValueAndFlash(inputElement, value, isSuccess) {
+            if (value !== null && !isNaN(value) && isFinite(value)) {
+                // تقريب للأرقام الجميلة (لنعرض حتى 6 أرقام عشرية)
+                let rounded = parseFloat(value).toFixed(6);
+                // إزالة الأصفار الزائدة من النهاية
+                rounded = rounded.replace(/\.?0+$/, '');
+                if (rounded === "") rounded = "0";
+                inputElement.value = rounded;
+                // إزالة الكلاسات السابقة ثم إضافة كلاس الوميض الأخضر (تم حسابها)
+                inputElement.classList.remove('green-flash', 'red-flash');
+                void inputElement.offsetWidth; // force reflow
+                if (isSuccess) {
+                    inputElement.classList.add('green-flash');
+                } else {
+                    // في حالة النجاح يكون أخضر، لكن هنا isSuccess true
+                }
+            } else {
+                // لا نغير القيمة
+                if (isSuccess === false && inputElement.value.trim() === "") {
+                    // فقط أضف أحمر على الفارغ (لعدم وجود بيانات كافية)
+                    inputElement.classList.remove('green-flash', 'red-flash');
+                    void inputElement.offsetWidth;
+                    inputElement.classList.add('red-flash');
+                }
+            }
+        }
+        
+        // دالة لإزالة الوميض من جميع الحقول بعد فترة (لنمنع تراكم الكلاسات)
+        function clearFlashesAfterTimeout() {
+            setTimeout(() => {
+                allInputs.forEach(inp => {
+                    inp.classList.remove('green-flash', 'red-flash');
+                });
+            }, 1100);
+        }
+        
+        // منطق الحساب الأساسي وفق قانون الجيوب
+        function calculateUsingSineLaw() {
+            // قراءة جميع المدخلات
+            let a = getNumericValue(sideA);
+            let b = getNumericValue(sideB);
+            let c = getNumericValue(sideC);
+            let A = getNumericValue(angleA);
+            let B = getNumericValue(angleB);
+            let C = getNumericValue(angleC);
+            
+            // تحويل الزوايا من درجات إلى راديان للعمليات المثلثية
+            function degToRad(deg) { return deg * Math.PI / 180; }
+            function radToDeg(rad) { return rad * 180 / Math.PI; }
+            
+            let sides = [a, b, c];
+            let angles = [A, B, C];
+            let sideNames = ['sideA', 'sideB', 'sideC'];
+            let angleNames = ['angleA', 'angleB', 'angleC'];
+            let sideInputs = [sideA, sideB, sideC];
+            let angleInputs = [angleA, angleB, angleC];
+            
+            // نسخ للكائن المراد تعديله
+            let newSides = [a, b, c];
+            let newAngles = [A, B, C];
+            
+            // أولاً: إذا كان مجموع زاويتين موجودين نحسب الثالثة (مجموع المثلث 180)
+            let knownAnglesIndices = [];
+            for (let i = 0; i < 3; i++) {
+                if (newAngles[i] !== null && newAngles[i] > 0 && newAngles[i] < 180) knownAnglesIndices.push(i);
+            }
+            if (knownAnglesIndices.length === 2) {
+                let idx1 = knownAnglesIndices[0];
+                let idx2 = knownAnglesIndices[1];
+                let missingIdx = 3 - idx1 - idx2;
+                let sumKnown = newAngles[idx1] + newAngles[idx2];
+                if (sumKnown < 180) {
+                    let thirdAngle = 180 - sumKnown;
+                    newAngles[missingIdx] = thirdAngle;
+                } else {
+                    // زوايا غير صحيحة
+                }
+            }
+            
+            // تحقق من صحة الزوايا (جميع الزوايا المعروفة يجب أن تكون موجبة ومجموعها 180 إذا كانت الثلاث معروفة)
+            let finalAnglesKnown = newAngles.filter(v => v !== null && v > 0);
+            if (finalAnglesKnown.length === 3) {
+                let sum = newAngles[0] + newAngles[1] + newAngles[2];
+                if (Math.abs(sum - 180) > 0.01) {
+                    // خطأ في مجموع الزوايا -> لا يمكن الحساب بشكل صحيح
+                    playErrorTone();
+                    return false;
+                }
+            }
+            
+            // الآن نبدأ بقانون الجيوب: side / sin(angle) = constant
+            // نوجد النسبة الممكنة إن وجد ضلع وزاويته المقابلة معًا
+            let ratio = null;
+            let ratioSourceIdx = -1;
+            for (let i = 0; i < 3; i++) {
+                if (newSides[i] !== null && newAngles[i] !== null && newAngles[i] > 0 && newAngles[i] < 180) {
+                    let sinVal = Math.sin(degToRad(newAngles[i]));
+                    if (sinVal > 1e-9) {
+                        let candidate = newSides[i] / sinVal;
+                        if (ratio === null || Math.abs(candidate - ratio) < 1e-6) {
+                            ratio = candidate;
+                            ratioSourceIdx = i;
+                        }
+                    }
+                }
+            }
+            
+            // إذا لم نجد نسبة كاملة، نحاول استخدام ضلع وزاوية من زوجين مختلفين: ( sideA, angleB ) لا يمكن إلا إذا حسبنا الزاوية المفقودة من خلال قانون الجيوب غير المباشر.
+            // بدلاً من التعقيد، سنقوم بمحاولة حساب الأضلاع والزوايا باستخدام النسب المتاحة: إذا كان لدينا زاويتين وضلع واحد على الأقل -> نحسب الأضلاع الأخرى
+            // لكن الطريقة الأكثر شمولاً: محاولة حساب القيم المفقودة بالاعتماد على المعطيات.
+            
+            let recalc = true;
+            let maxIter = 10;
+            let iter = 0;
+            let anyChange = false;
+            
+            while (recalc && iter < maxIter) {
+                recalc = false;
+                // 1) تحديث النسبة إذا توفر ضلع وزاويته
+                for (let i = 0; i < 3; i++) {
+                    if (newSides[i] !== null && newAngles[i] !== null && newAngles[i] > 0 && newAngles[i] < 180) {
+                        let sinVal = Math.sin(degToRad(newAngles[i]));
+                        if (sinVal > 1e-9) {
+                            let newRatio = newSides[i] / sinVal;
+                            if (ratio === null || Math.abs(newRatio - ratio) > 1e-9) {
+                                ratio = newRatio;
+                                recalc = true;
+                            } else if (ratio !== null && Math.abs(newRatio - ratio) > 1e-7) {
+                                // تناقض في النسب => بيانات خاطئة
+                                playErrorTone();
+                                return false;
+                            }
+                        }
+                    }
+                }
+                
+                // إذا كان لدينا نسبة، نحسب الأضلاع المفقودة من الزوايا
+                if (ratio !== null) {
+                    for (let i = 0; i < 3; i++) {
+                        if (newSides[i] === null && newAngles[i] !== null && newAngles[i] > 0 && newAngles[i] < 180) {
+                            let sinVal = Math.sin(degToRad(newAngles[i]));
+                            let computedSide = ratio * sinVal;
+                            if (computedSide > 0) {
+                                newSides[i] = computedSide;
+                                recalc = true;
+                                anyChange = true;
+                            }
+                        }
+                    }
+                }
+                
+                // حساب الزوايا المفقودة من الأضلاع والنسبة (إذا كان لدينا ضلع ونسبة)
+                if (ratio !== null) {
+                    for (let i = 0; i < 3; i++) {
+                        if (newAngles[i] === null && newSides[i] !== null && newSides[i] > 0) {
+                            let sinVal = newSides[i] / ratio;
+                            if (sinVal >= -1 && sinVal <= 1 && sinVal > 0) {
+                                let angleRad = Math.asin(Math.min(1, sinVal));
+                                let angleDeg = radToDeg(angleRad);
+                                // في المثلث الزاوية حادة عادة لكن قد تكون منفرجة، نتحقق من مجموع الزوايا الأخرى
+                                let otherKnown = [];
+                                for (let j = 0; j < 3; j++) if (j !== i && newAngles[j] !== null) otherKnown.push(newAngles[j]);
+                                let sumOther = otherKnown.reduce((s, v) => s + v, 0);
+                                let possibleAngle1 = angleDeg;
+                                let possibleAngle2 = 180 - angleDeg;
+                                let chosen = null;
+                                if (possibleAngle1 > 0 && possibleAngle1 < 180) {
+                                    if (sumOther + possibleAngle1 < 180.1) chosen = possibleAngle1;
+                                    else if (sumOther + possibleAngle2 < 180.1 && possibleAngle2 > 0 && possibleAngle2 < 180) chosen = possibleAngle2;
+                                } else if (possibleAngle2 > 0 && possibleAngle2 < 180 && sumOther + possibleAngle2 < 180.1) chosen = possibleAngle2;
+                                if (chosen !== null && chosen > 0) {
+                                    newAngles[i] = chosen;
+                                    recalc = true;
+                                    anyChange = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // إذا كانت زاويتان معروفتين نحسب الثالثة
+                let knownAng = [];
+                for (let i = 0; i < 3; i++) if (newAngles[i] !== null) knownAng.push(i);
+                if (knownAng.length === 2) {
+                    let idx1 = knownAng[0], idx2 = knownAng[1];
+                    let missing = 3 - idx1 - idx2;
+                    let sum = newAngles[idx1] + newAngles[idx2];
+                    if (sum < 180 && newAngles[missing] === null) {
+                        newAngles[missing] = 180 - sum;
+                        recalc = true;
+                        anyChange = true;
+                    }
+                }
+                
+                iter++;
+            }
+            
+            // بعد الحلقات تحقق من أن القيم الناتجة معقولة
+            let valid = true;
+            for (let i = 0; i < 3; i++) {
+                if (newAngles[i] !== null && (newAngles[i] <= 0 || newAngles[i] >= 180)) valid = false;
+                if (newSides[i] !== null && newSides[i] <= 0) valid = false;
+            }
+            if (newAngles[0] && newAngles[1] && newAngles[2]) {
+                if (Math.abs(newAngles[0] + newAngles[1] + newAngles[2] - 180) > 0.5) valid = false;
+            }
+            
+            // التحقق: هل تم حساب شيء جديد على الأقل؟ (أي change)
+            if (!anyChange && ratio === null && knownAnglesIndices.length < 2) {
+                playErrorTone();
+                return false; // لا توجد بيانات كافية
+            }
+            
+            if (!valid) {
+                playErrorTone();
+                return false;
+            }
+            
+            // الآن نقوم بتعيين القيم للحقول وتطبيق الفلاش الأخضر على الحقول التي تم حسابها (التي كانت فارغة سابقاً وأصبحت لها قيمة)
+            // تمييز الحقول التي تم تحديثها (كانت أصلاً null والآن لها قيمة)
+            for (let i = 0; i < 3; i++) {
+                let originalSide = getNumericValue(sideInputs[i]);
+                let newSideVal = newSides[i];
+                if (originalSide === null && newSideVal !== null && !isNaN(newSideVal) && isFinite(newSideVal)) {
+                    setValueAndFlash(sideInputs[i], newSideVal, true);
+                } else if (originalSide !== null && newSideVal !== null && Math.abs(originalSide - newSideVal) > 1e-6) {
+                    // لو كان موجوداً لكن اختلف بسبب الحسابات (مثلاً تناقض) نضعه أيضاً لكن نعطيه أخضر
+                    setValueAndFlash(sideInputs[i], newSideVal, true);
+                } else if (originalSide !== null && newSideVal !== null) {
+                    // نفس القيمة - لا فلاش
+                    sideInputs[i].value = newSideVal;
+                } else if (originalSide === null && newSideVal === null) {
+                    // يبقى فارغاً ويحمر
+                    if (sideInputs[i].value.trim() === "") {
+                        sideInputs[i].classList.remove('green-flash');
+                        sideInputs[i].classList.add('red-flash');
+                    }
+                }
+            }
+            
+            for (let i = 0; i < 3; i++) {
+                let originalAng = getNumericValue(angleInputs[i]);
+                let newAngVal = newAngles[i];
+                if (originalAng === null && newAngVal !== null && !isNaN(newAngVal)) {
+                    setValueAndFlash(angleInputs[i], newAngVal, true);
+                } else if (originalAng !== null && newAngVal !== null && Math.abs(originalAng - newAngVal) > 1e-5) {
+                    setValueAndFlash(angleInputs[i], newAngVal, true);
+                } else if (originalAng !== null && newAngVal !== null) {
+                    angleInputs[i].value = newAngVal;
+                } else if (originalAng === null && newAngVal === null && angleInputs[i].value.trim() === "") {
+                    angleInputs[i].classList.remove('green-flash');
+                    angleInputs[i].classList.add('red-flash');
+                }
+            }
+            
+            // تشغيل صوت النجاح
+            playSuccessTone();
+            clearFlashesAfterTimeout();
+            return true;
+        }
+        
+        // وظيفة زر الحساب
+        function onCalculate() {
+            // إزالة الفلاشات السابقة من جميع الحقول قبل الحساب
+            allInputs.forEach(inp => inp.classList.remove('green-flash', 'red-flash'));
+            let success = calculateUsingSineLaw();
+            if (!success) {
+                // إضافة فلاش أحمر لكل حقل فارغ ولم يتم حساب قيمته (لكن نحن بالفعل أضفنا أحمر في الدالة لكل حقل فارغ لم يحسب)
+                // لكن التأكد من أن أي حقل فارغ غير محسوب يكتسب اللون الأحمر
+                for (let inp of allInputs) {
+                    if (inp.value.trim() === "" && !inp.classList.contains('green-flash')) {
+                        inp.classList.add('red-flash');
+                    }
+                }
+                clearFlashesAfterTimeout();
+            }
+        }
+        
+        // زر إعادة التعيين مع صوت خاص
+        function onReset() {
+            playResetTone();
+            for (let inp of allInputs) {
+                inp.value = "";
+                inp.classList.remove('green-flash', 'red-flash');
+            }
+        }
+        
+        // ربط الأحداث
+        const calcBtn = document.getElementById('calculateBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        calcBtn.addEventListener('click', onCalculate);
+        resetBtn.addEventListener('click', onReset);
+        
+        // نسمح بتشغيل الصوت عند أول تفاعل (لكن المستخدم سيضغط على زر)
+        // إضافة تأشير لتشغيل الصوت بعد تفاعل المستخدم الأولي
+        document.body.addEventListener('click', function initAudioOnFirstClick() {
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }, { once: true });
+    })();
+</script>
+</body>
+</html>

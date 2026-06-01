@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>masafa</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+background-color:#dfc;
+}
+.fl{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+.flin{
+display:flex;
+flex-direction:row;
+justify-content:space-around;
+align-items:center;
+}
+label {
+font-size:80px;
+text-align:center;
+}
+.inps{
+width:40vw;
+height:35vh;
+display:flex;
+flex-direction:row;
+justify-content:center;
+
+}
+h1{
+width:90vw;
+height:7vh;
+font-size:50px;
+}
+.calc{
+width:25vw;
+height:5vh;
+font-size:50px;
+margin-top:25px;
+color:white;
+background-color:#090;
+border:solid #0c0 5px;
+border-radius:25px;
+}
+.calc:hover {
+width:28vw;
+height:6vh;
+font-size:55px;
+color:#090;
+background-color:white;
+border:solid #0c0 5px;
+border-radius:25px;
+}
+.in {
+width:30vw;
+font-size:50px;
+padding:10px;
+padding-left:15px;
+color:#666;
+background-color:#0f9;
+border:solid #0b6 5px;
+border-radius:20px;
+}
+.results{
+width:100vw;
+height:60vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+
+}
+p{
+
+width:80vw;
+height:5vh;
+font-size:50px;
+
+}
+.sp {
+width:55vw;
+font-size:50px;
+padding:10px;
+padding-left:15px;
+color:#666;
+background-color:#0f9;
+border:solid #0b6 5px;
+border-radius:20px;
+}
+.tl{
+border-top-left-radius:50px;
+border-top-right-radius:0px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:50px;
+}
+.tr{
+border-top-left-radius:0%;
+border-top-right-radius:50px;
+border-bottom-left-radius:50px;
+border-bottom-right-radius:0%;
+}
+.dl{
+border-top-left-radius:0%;
+border-top-right-radius:50px;
+border-bottom-left-radius:50px;
+border-bottom-right-radius:0%;
+}
+.dr{
+border-top-left-radius:50px;
+border-top-right-radius:0px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:50px;
+}
+.mar {
+margin-left:20vw;
+}
+</style>
+</head>
+<body>
+	<div class="fl" >
+		<label>حساب احداثيات نقطة بطريقة المثلث</label>
+		<div class="fl" >
+			<p class="mar" >: ادخل احداثيات النقطة الاولى A</p>
+			<div class="flin" >
+			<input class="in tl" type="number"  id="xa" placeholder="XA" >
+			<input class="in tr" type="number"  id="ya" placeholder="YA" >
+			</div>
+		</div>	
+		<div class="fl" >
+			<p class="mar" >: ادخل احداثيات النقطة الثانية B</p>
+			<div class="flin" >
+			<input class="in dl" type="number"  id="xb" placeholder="XB" >
+			<input class="in dr" type="number"  id="yb" placeholder="YB" >
+			</div>
+		</div>
+		<div class="fl" >
+			<p class="mar" >: ادخل قياس الزوايا الفا وبيتا بالغراد </p>
+			<div class="flin" >
+			<input class="in tl" type="number"  id="alfa" placeholder="Alfa" >
+			<input class="in tr" type="number"  id="beta" placeholder="Beta" >
+			</div>
+		</div>	
+		<div>
+			<button class="calc" id="ihseb" onclick="calc()">أحسب</button>
+		</div>
+		<div>
+			<p class="result sp" id="resultx" >xc</p>
+			<p class="result sp" id="resulty" >yc</p>
+		</div>
+	</div>
+<script>
+
+function calc(){
+var xa = document.getElementById("xa")
+var xb = document.getElementById("xb")
+var ya = document.getElementById("ya")
+var yb = document.getElementById("yb")
+var alfa = document.getElementById("alfa")
+var beta = document.getElementById("beta")
+var rex = document.getElementById("resultx")
+var rey = document.getElementById("resulty")
+alfan = alfa.value
+betan = beta.value
+//التحويل من غراد الى راديان 
+alfarad = (Math.PI*alfan)/200
+betarad = (Math.PI*betan)/200
+//حساب غاما و تحويلها للراديان
+var gama = 200-alfan-betan
+gamarad = (Math.PI*gama)/200
+console.log(gama)
+
+//حساب AB
+var dx = xa.value - xb.value 
+var dy = ya.value - yb.value 
+var dxm = dx * dx
+var dym = dy * dy
+var sum = dxm + dym
+var ab = Math.sqrt(sum)
+console.log("ab="+ab)
+//حساب Ac Bc
+var ac = (ab*Math.sin(betarad))/Math.sin(gamarad)
+var bc = (ab*Math.sin(alfarad))/Math.sin(gamarad)
+console.log("ac="+ac)
+console.log("bc="+bc)
+//حساب السموت
+//حساب gab
+dx = xb.value - xa.value 
+dy = yb.value - ya.value 
+let dxdy = dx/dy
+if(dxdy<0){
+dxdy = dxdy * -1
+}else{
+dxdy = dxdy
+}
+let a = Math.atan(dxdy)
+a = 200 * a /Math.PI
+let g = a
+if(dx > 0 && dy>0){
+g = a
+}
+else if(dx>0 && dy < 0){
+g = 200 - a
+}
+else if(dx<0 && dy<0){
+g = 200 + a
+}
+else{
+g = 400 - a
+}
+var gab = g
+var gba = g + 200
+console.log("gab="+gab)
+//حساب السموت gac و gbc
+var gac = gab - alfan
+console.log("gac="+gac)
+//اصلاح gba************
+var gba = 0
+if(gab > 200){
+gba = gab - 200
+}
+else{
+gba = gab + 200
+}
+//
+var gbc = gab - 200 + betan
+console.log("gac="+gac)
+console.log("gbc="+gbc)
+//تحويل gac
+gacrad = (Math.PI*gac)/200
+//حساب احداثيات c
+var singac = Math.sin(gacrad)
+var xcaa = ac * singac
+var xca = Number(xa.value) + xcaa
+var cosgac = Math.cos(gacrad)
+var ycaa = ac * cosgac
+var yca = Number(ya.value) + ycaa
+rex.innerHTML = xca
+rey.innerHTML = yca
+}
+
+</script>	
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<title>masafa</title>
+<style>
+body {
+padding:0px;
+margin:0px;
+background-color:#dfc;
+}
+.fl{
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+}
+.flin{
+display:flex;
+flex-direction:row;
+justify-content:space-around;
+align-items:center;
+}
+label {
+font-size:80px;
+text-align:center;
+}
+.inps{
+width:40vw;
+height:35vh;
+display:flex;
+flex-direction:row;
+justify-content:center;
+
+}
+h1{
+width:90vw;
+height:7vh;
+font-size:50px;
+}
+.calc{
+width:25vw;
+height:5vh;
+font-size:50px;
+margin-top:25px;
+color:white;
+background-color:#090;
+border:solid #0c0 5px;
+border-radius:25px;
+}
+.calc:hover {
+width:28vw;
+height:6vh;
+font-size:55px;
+color:#090;
+background-color:white;
+border:solid #0c0 5px;
+border-radius:25px;
+}
+.in {
+width:30vw;
+font-size:50px;
+padding:10px;
+padding-left:15px;
+color:#666;
+background-color:#0f9;
+border:solid #0b6 5px;
+border-radius:20px;
+}
+.results{
+width:100vw;
+height:60vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+
+}
+p{
+
+width:80vw;
+height:5vh;
+font-size:50px;
+
+}
+.sp {
+width:55vw;
+font-size:50px;
+padding:10px;
+padding-left:15px;
+color:#666;
+background-color:#0f9;
+border:solid #0b6 5px;
+border-radius:20px;
+}
+.tl{
+border-top-left-radius:50px;
+border-top-right-radius:0px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:50px;
+}
+.tr{
+border-top-left-radius:0%;
+border-top-right-radius:50px;
+border-bottom-left-radius:50px;
+border-bottom-right-radius:0%;
+}
+.dl{
+border-top-left-radius:0%;
+border-top-right-radius:0px;
+border-bottom-left-radius:50px;
+border-bottom-right-radius:50px;
+}
+.dr{
+border-top-left-radius:50px;
+border-top-right-radius:50px;
+border-bottom-left-radius:0px;
+border-bottom-right-radius:0px;
+}
+.mar {
+text-align:center;
+}
+</style>
+</head>
+<body>
+	<div class="fl" >
+		<label>حساب احداثيات نقطة باستخدام نقطة معلومة</label>
+		<div class="fl" >
+			<p class="mar" >: ادخل احداثيات النقطة المعلومة</p>
+			<div class="flin" >
+			<input class="in tl" type="number"  id="xa" placeholder="XA" >
+			<input class="in tr" type="number"  id="ya" placeholder="YA" >
+			</div>
+		</div>	
+		<div class="fl" >
+			<p class="mar" >: ادخل المسافة بين النقطتين </p>
+			<div class="flin" >
+			<input class="in dl" type="number"  id="dab" placeholder="d AB" >
+			</div>
+		</div>
+		<div class="fl" >
+			<p class="mar" >: ادخل السمت من المعلومة الى المجهولة</p>
+			<div class="flin" >
+			<input class="in dr" type="number"  id="gab" placeholder="G AB" >
+			</div>
+		</div>
+		<div>
+			<button class="calc" id="ihseb" onclick="calc()">أحسب</button>
+		</div>
+		<div>
+			<p class="result sp" id="resultx" >xb</p>
+			<p class="result sp" id="resulty" >yb</p>
+		</div>
+	</div>
+<script>
+function calc(){
+var xa = document.getElementById("xa")
+var dab = document.getElementById("dab")
+var ya = document.getElementById("ya")
+var gab = document.getElementById("gab")
+var rex = document.getElementById("resultx")
+var rey = document.getElementById("resulty")
+var gabr = gab.value * Math.PI /200 
+var sgab = Math.sin(gabr)
+var cgab = Math.cos(gabr)
+var dsgab = dab.value * sgab
+var dcgab = dab.value * cgab
+var xb = Number(xa.value) + dsgab
+var yb = Number(ya.value) + dcgab
+rex.innerHTML = xb
+rey.innerHTML = yb
+
+}
+
+</script>	
+</body>
+</html>rHTML = yb
+
+}
+
+</script>	
+</body>
+</html>
