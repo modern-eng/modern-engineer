@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Engineer | الصفحة الرئيسية</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #000 0%, #0f0 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* الحاوية الرئيسية */
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        /* عنوان الصفحة */
+        .title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .title h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+            animation: fadeInDown 0.8s ease;
+        }
+
+        /* حاوية التمرير الأفقي */
+        .scroll-container {
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 40px 20px;
+            scroll-behavior: smooth;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .scroll-container:active {
+            cursor: grabbing;
+        }
+
+        /* إخفاء شريط التمرير مع الاحتفاظ بالوظيفة */
+        .scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .scroll-container::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+
+        .scroll-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.6);
+            border-radius: 10px;
+        }
+
+        /* ترتيب البطاقات أفقياً */
+        .cards-wrapper {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            min-width: min-content;
+        }
+
+        /* البطاقة الأساسية */
+        .card {
+            flex: 0 0 auto;
+            width: 280px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+
+        /* البطاقة التي في المنتصف (الأكبر) */
+        .card.center-card {
+            transform: scale(1.1);
+            opacity: 1;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* تأثير hover على البطاقات */
+        .card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+        }
+
+        .card.center-card:hover {
+            transform: translateY(-10px) scale(1.15);
+        }
+
+        /* صورة البطاقة */
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        /* محتوى البطاقة */
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* تذييل الصفحة مع أيقونات التواصل الاجتماعي */
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 60px;
+            display: inline-flex;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .social-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 50%;
+            font-size: 28px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .social-icon.facebook {
+            color: #1877f2;
+        }
+
+        .social-icon.instagram {
+            color: #e4405f;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .social-icon.facebook:hover {
+            background: #1877f2;
+            color: white;
+        }
+
+        .social-icon.instagram:hover {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            color: white;
+        }
+
+        /* تأثيرات الحركة */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .title h1 {
+                font-size: 2rem;
+            }
+            
+            .card {
+                width: 240px;
+                background-color:#dfc;
+                border:solid 5px #dfc;
+            }
+            
+            .card.center-card {
+                transform: scale(1.05);
+            }
+            
+            .social-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            
+            .social-icons {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 220px;
+            }
+            
+            .card-title {
+                font-size: 1.2rem;
+            }
+            
+            .card-description {
+                font-size: 0.8rem;
+            }
+        }
+        /* تصميم متجاوب للهواتف */
+        @media (max-width: 768px) {
+        .title h1 {
+        font-size: 2rem;
+        }
+        
+        .card {
+        width: 260px;  /* عرض مناسب للهواتف */
+        background-color:#dfc;
+        border:solid 5px #dfc;
+        }
+        
+        /* جعل البطاقة أطول على الهواتف */
+        .card-image {
+        width:100%;  /* زيادة ارتفاع الصورة */
+        }
+        
+        .card-content {
+        padding: 10px;
+        }
+        
+        .card-title {
+        font-size: 1.3rem;  /* عنوان أكبر قليلاً */
+        margin-bottom: 6px;
+        }
+        
+        .card-description {
+        font-size: 0.95rem;  /* وصف أوضح */
+        line-height: 1.6;    /* تباعد أسطر أفضل للقراءة */
+        }
+        
+        .card.center-card {
+        transform: scale(1.08);  /* تكبير أقل قليلاً على الهواتف */
+        }
+        
+        .social-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+        }
+        
+        .social-icons {
+        gap: 20px;
+        }
+        }
+        
+        /* للهواتف الصغيرة جداً */
+        @media (max-width: 480px) {
+        .card {
+        height:300px;
+        width: 200px;  /* عرض أقل */
+        background-color:#dfc;
+        border:solid 5px #dfc;
+        }
+        
+        /* جعل البطاقة أطول بشكل واضح */
+        .card-image {
+        width:100%;  /* صورة أطول بكثير */
+        }
+        
+        .card-content {
+        padding: 6px;
+        }
+        
+        .card-title {
+        font-size: 1.25rem;
+        }
+        
+        .card-description {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        }
+        
+        /* زيادة المسافة بين البطاقات */
+        .cards-wrapper {
+        gap: 20px;
+        }
+        
+        .social-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+        }
+        }
+        a {
+        text-decoration:none;
+        color:black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- العنوان الرئيسي -->
+        <div class="title">
+            <h1>Modern Engineer</h1>
+        </div>
+
+        <!-- حاوية التمرير الأفقي -->
+        <div class="scroll-container" id="scrollContainer">
+            <div class="cards-wrapper" id="cardsWrapper">
+                <!-- البطاقة 1 -->
+                <a href="https://modern-eng.github.io/modern-engineer/masafa.html" >
+                <div class="card">
+                    <img src="https://modern-eng.github.io/modern-engineer/masafa.jpg" alt="masafa" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">حساب مسافة</div>
+                        <div class="card-description">حساب مسافة d بين نقطتين معلومتي الاحداثيات</div>
+                    </div>
+                </div>
+                </a>
+
+                <!-- البطاقة 2 -->
+                <a href="https://modern-eng.github.io/modern-engineer/samt.html" >
+                <div class="card">
+      
+                    <img src="https://modern-eng.github.io/modern-engineer/samt.jpg" alt="samt" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">حساب سمت قطعة مستقيمة</div>
+                        <div class="card-description">حساب السمت بسن نقطتين معلومتي الاحداثيات</div>
+                    </div>
+   
+                </div>
+                </a>
+
+                <!-- البطاقة 3 -->
+                <a href="https://modern-eng.github.io/modern-engineer/xy.html" >
+				<a href="xy.html" >
+                <div class="card">
+                    <img src="https://modern-eng.github.io/modern-engineer/xy.jpg" alt="Electrical Engineering" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">حساب احداثيات نقطة</div>
+                        <div class="card-description">حساب احداثيات نقطة من نقطة اخرى معلومة </div>
+                    </div>
+                </div>
+                </a>
+
+                <!-- البطاقة 4 -->
+                <a href="https://modern-eng.github.io/modern-engineer/sin.html" >
+                <div class="card">
+                    <img src="https://modern-eng.github.io/modern-engineer/sin.jpg" alt="Sin" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">علاقة الجيوب</div>
+                        <div class="card-description">حساب اطوال وزوايا المثلث باستخدام علاقة الجيوب</div>
+                    </div>
+                </div>
+				</a>
+                <!-- البطاقة 5 -->
+                <a href="https://modern-eng.github.io/modern-engineer/xytringl.html" >
+                <div class="card">
+                    <img src="https://modern-eng.github.io/modern-engineer/xytraingl.jpg" alt="xytaka" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">طريقة المثلث</div>
+                        <div class="card-description">حساب احداثيات نقطة بطريقة المثلث</div>
+                    </div>
+                </div>
+				</a>
+                <!-- البطاقة 6 -->
+                <a href="https://modern-eng.github.io/modern-engineer/xytaka.html" >
+                <div class="card" id="fa" >
+                    <img src="https://modern-eng.github.io/modern-engineer/xytaka.jpg" alt="xytaka" class="card-image">
+                    <div class="card-content">
+                        <div class="card-title">طريقة التقاطع</div>
+                        <div class="card-description">حساب احداثيات نقطة بطريقة التقاطع</div>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+
+        <!-- أيقونات التواصل الاجتماعي -->
+        <div class="footer">
+            <div class="social-icons">
+                <a href="https://www.facebook.com/share/1D6C5kgYq2/" class="social-icon facebook" target="_blank">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://www.instagram.com/modern_engineering_2023?igsh=MTh1OXIxaGdiZDFkaQ==" id="fa"  class="social-icon instagram" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // جعل البطاقة التي في المنتصف أكبر حجماً
+        const scrollContainer = document.getElementById('scrollContainer');
+        const cards = document.querySelectorAll('.card');
+
+        function updateCenterCard() {
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const centerX = containerRect.left + containerRect.width / 2;
+            
+            let closestCard = null;
+            let minDistance = Infinity;
+            
+            cards.forEach(card => {
+                const cardRect = card.getBoundingClientRect();
+                const cardCenter = cardRect.left + cardRect.width / 2;
+                const distance = Math.abs(cardCenter - centerX);
+                
+                if (distance < minDistance) {
+                    minDistance = distance;
+                    closestCard = card;
+                }
+            });
+            
+            // إزالة الكلاس من جميع البطاقات
+            cards.forEach(card => {
+                card.classList.remove('center-card');
+            });
+            
+            // إضافة الكلاس لأقرب بطاقة للمنتصف
+            if (closestCard) {
+                closestCard.classList.add('center-card');
+            }
+        }
+
+        // إضافة مستمع حدث التمرير
+        scrollContainer.addEventListener('scroll', updateCenterCard);
+        
+        // تحديث عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            updateCenterCard();
+            
+            // تمرير إلى المنتصف تقريباً عند التحميل
+            const scrollWidth = scrollContainer.scrollWidth;
+            const containerWidth = scrollContainer.clientWidth;
+            scrollContainer.scrollLeft = (scrollWidth - containerWidth) / 2;
+            
+            setTimeout(updateCenterCard, 100);
+        });
+        
+        // تحديث عند تغيير حجم النافذة
+        window.addEventListener('resize', updateCenterCard);
+        
+        // إمكانية السحب بالماوس للتمرير
+        let isDragging = false;
+        let startX;
+        let scrollLeft;
+        
+        scrollContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX - scrollContainer.offsetLeft;
+            scrollLeft = scrollContainer.scrollLeft;
+            scrollContainer.style.cursor = 'grabbing';
+        });
+        
+        scrollContainer.addEventListener('mouseleave', () => {
+            isDragging = false;
+            scrollContainer.style.cursor = 'grab';
+        });
+        
+        scrollContainer.addEventListener('mouseup', () => {
+            isDragging = false;
+            scrollContainer.style.cursor = 'grab';
+        });
+        
+        scrollContainer.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft;
+            const walk = (x - startX) * 2;
+            scrollContainer.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body>
+</html></body>
+</html>center-card');
+            }
+        }
+
+        // إضافة مستمع حدث التمرير
+        scrollContainer.addEventListener('scroll', updateCenterCard);
+        
+        // تحديث عند تحميل الصفحة
+        window.addEventListener('load', () => {
+            updateCenterCard();
+            
+            // تمرير إلى المنتصف تقريباً عند التحميل
+            const scrollWidth = scrollContainer.scrollWidth;
+            const containerWidth = scrollContainer.clientWidth;
+            scrollContainer.scrollLeft = (scrollWidth - containerWidth) / 2;
+            
+            setTimeout(updateCenterCard, 100);
+        });
+        
+        // تحديث عند تغيير حجم النافذة
+        window.addEventListener('resize', updateCenterCard);
+        
+        // إمكانية السحب بالماوس للتمرير
+        let isDragging = false;
+        let startX;
+        let scrollLeft;
+        
+        scrollContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.pageX - scrollContainer.offsetLeft;
+            scrollLeft = scrollContainer.scrollLeft;
+            scrollContainer.style.cursor = 'grabbing';
+        });
+        
+        scrollContainer.addEventListener('mouseleave', () => {
+            isDragging = false;
+            scrollContainer.style.cursor = 'grab';
+        });
+        
+        scrollContainer.addEventListener('mouseup', () => {
+            isDragging = false;
+            scrollContainer.style.cursor = 'grab';
+        });
+        
+        scrollContainer.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft;
+            const walk = (x - startX) * 2;
+            scrollContainer.scrollLeft = scrollLeft - walk;
+        });
+    </script>
+</body>
+</html></body>
+</html>l>
